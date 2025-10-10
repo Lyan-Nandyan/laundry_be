@@ -20,6 +20,6 @@ const Pelanggan = db.define(
   freezeTableName: true
 });
 
-db.sync().then(() => console.log("Database synced"));
+db.sync().then(() => console.log("Database synced model or table Pelanggan"));
 
 export default Pelanggan;
