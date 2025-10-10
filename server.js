@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import PelangganRoute from "./routes/PelangganRoute.js";
 import LayananRoute from "./routes/LayananRoute.js";
+import Transaksi from "./routes/TransaksiRoute.js";
 const app = express();
 
 dotenv.config();
@@ -10,6 +11,7 @@ const PORT = process.env.PORT;
 app.use(express.json());
 app.use("/pelanggan", PelangganRoute);
 app.use("/layanan", LayananRoute);
+app.use("/transaksi", Transaksi);
 
 app.get("/", (req, res) => {
   res.json({
