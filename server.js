@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import PelangganRoute from "./routes/PelangganRoute.js";
 import LayananRoute from "./routes/LayananRoute.js";
 import Transaksi from "./routes/TransaksiRoute.js";
+import Auth from "./routes/AuthRoute.js";
 import { sessionMiddleware, keycloak } from "./config/keycloak.js";
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(keycloak.middleware());
 app.use("/pelanggan", PelangganRoute);
 app.use("/layanan", LayananRoute);
 app.use("/transaksi", Transaksi);
+app.use("/auth", Auth);
 
 app.get("/", (req, res) => {
   res.json({
