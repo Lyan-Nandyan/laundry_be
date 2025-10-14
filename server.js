@@ -1,17 +1,29 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import PelangganRoute from "./routes/PelangganRoute.js";
 import LayananRoute from "./routes/LayananRoute.js";
 import Transaksi from "./routes/TransaksiRoute.js";
+import Auth from "./routes/AuthRoute.js";
+import { sessionMiddleware, keycloak } from "./config/keycloak.js";
 const app = express();
 
 dotenv.config();
 const PORT = process.env.PORT;
 
 app.use(express.json());
+app.use(cors({
+  origin: process.env.FE_URL,
+  credentials: true,
+}));
+
+app.use(sessionMiddleware);
+app.use(keycloak.middleware());
+
 app.use("/pelanggan", PelangganRoute);
 app.use("/layanan", LayananRoute);
 app.use("/transaksi", Transaksi);
+app.use("/auth", Auth);
 
 app.get("/", (req, res) => {
   res.json({

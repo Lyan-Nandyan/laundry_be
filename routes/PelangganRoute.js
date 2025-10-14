@@ -1,10 +1,10 @@
 import express from "express";
-//import { keycloak } from "../keycloak.js";
+import {  requireRoles } from "../middleware/AuthMiddleware.js";
 import { getAllPelanggan, createPelanggan } from "../controllers/PelangganController.js";
 
 const router = express.Router();
 
-router.get("/", /*keycloak.protect("realm:admin"),*/ getAllPelanggan);
-router.post("/", /*keycloak.protect("realm:petugas"),*/ createPelanggan);
+router.get("/", requireRoles(["admin", "petugas"]), getAllPelanggan);
+router.post("/", requireRoles(["petugas"]), createPelanggan);
 
 export default router;
