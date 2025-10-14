@@ -1,10 +1,10 @@
 import express from "express";
-import { apiProtect } from "../middleware/AuthMiddleware.js";
+import {  requireRoles } from "../middleware/AuthMiddleware.js";
 import { getAllPelanggan, createPelanggan } from "../controllers/PelangganController.js";
 
 const router = express.Router();
 
-router.get("/", apiProtect(["admin", "petugas"]), getAllPelanggan);
-router.post("/", apiProtect(["petugas"]), createPelanggan);
+router.get("/", requireRoles(["admin", "petugas"]), getAllPelanggan);
+router.post("/", requireRoles(["petugas"]), createPelanggan);
 
 export default router;

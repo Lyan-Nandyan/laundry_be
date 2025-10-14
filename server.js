@@ -18,6 +18,7 @@ app.use(cors({
 }));
 
 app.use(sessionMiddleware);
+app.use(keycloak.middleware());
 
 app.use("/pelanggan", PelangganRoute);
 app.use("/layanan", LayananRoute);

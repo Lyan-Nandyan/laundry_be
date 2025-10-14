@@ -19,19 +19,26 @@ export const login = async (req, res) => {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
+    // FE menyimpan kedua token ini (access + refresh)
     res.json({
       access_token: data.access_token,
       refresh_token: data.refresh_token,
       expires_in: data.expires_in,
+      token_type: data.token_type,
+      scope: data.scope,
     });
-  } catch (error) {
-    console.error(error.response?.data || error.message);
+  } catch (err) {
+    console.error("LOGIN ERR:", err.response?.data || err.message);
     res.status(401).json({ message: "Invalid credentials" });
   }
 };
 
-export const refreshToken = async (req, res) => {
+export const refresh = async (req, res) => {
   const { refresh_token } = req.body;
+  if (!refresh_token) {
+    return res.status(400).json({ message: "refresh_token is required" });
+  }
+
   try {
     const params = new URLSearchParams({
       client_id: process.env.KEYCLOAK_CLIENT_ID,
@@ -48,9 +55,11 @@ export const refreshToken = async (req, res) => {
       access_token: data.access_token,
       refresh_token: data.refresh_token,
       expires_in: data.expires_in,
+      token_type: data.token_type,
+      scope: data.scope,
     });
-  } catch (error) {
-    console.error(error.response?.data || error.message);
+  } catch (err) {
+    console.error("REFRESH ERR:", err.response?.data || err.message);
     res.status(401).json({ message: "Invalid refresh token" });
   }
 };
@@ -58,7 +67,7 @@ export const refreshToken = async (req, res) => {
 export const logout = async (req, res) => {
   const { refresh_token } = req.body;
   if (!refresh_token) {
-    return res.status(400).json({ message: "Refresh token required" });
+    return res.status(400).json({ message: "refresh_token is required" });
   }
 
   try {
@@ -68,17 +77,14 @@ export const logout = async (req, res) => {
       refresh_token,
     });
 
-    const { status } = await axios.post(`${BASE_URL}/logout`, params, {
+    await axios.post(`${BASE_URL}/logout`, params, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      validateStatus: () => true,
+      validateStatus: () => true, // kita yang handle status
     });
 
-    if (status === 204 || status === 200)
-      return res.json({ message: "Logged out successfully" });
-
-    res.status(status).json({ message: "Logout failed" });
-  } catch (error) {
-    console.error("Logout error:", error.message);
+    res.json({ message: "Logged out" });
+  } catch (err) {
+    console.error("LOGOUT ERR:", err.response?.data || err.message);
     res.status(500).json({ message: "Logout failed" });
   }
 };
