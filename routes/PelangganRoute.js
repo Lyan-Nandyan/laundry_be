@@ -4,7 +4,7 @@ import { getAllPelanggan, createPelanggan } from "../controllers/PelangganContro
 
 const router = express.Router();
 
-router.get("/", apiProtect("admin"), getAllPelanggan);
-router.post("/", apiProtect("petugas"), createPelanggan);
+router.get("/", apiProtect(["admin", "petugas"]), getAllPelanggan);
+router.post("/", apiProtect(["petugas"]), createPelanggan);
 
 export default router;

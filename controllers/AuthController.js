@@ -2,9 +2,10 @@ import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
+const BASE_URL = `${process.env.KEYCLOAK_AUTH_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect`;
+
 export const login = async (req, res) => {
   const { username, password } = req.body;
-
   try {
     const params = new URLSearchParams({
       client_id: process.env.KEYCLOAK_CLIENT_ID,
@@ -14,12 +15,10 @@ export const login = async (req, res) => {
       password,
     });
 
-    const { data } = await axios.post(
-      `${process.env.KEYCLOAK_AUTH_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`,
-      params
-    );
+    const { data } = await axios.post(`${BASE_URL}/token`, params, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
 
-    // hanya kirim token ke FE
     res.json({
       access_token: data.access_token,
       refresh_token: data.refresh_token,
@@ -33,24 +32,22 @@ export const login = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
   const { refresh_token } = req.body;
-
   try {
     const params = new URLSearchParams({
       client_id: process.env.KEYCLOAK_CLIENT_ID,
       client_secret: process.env.KEYCLOAK_CLIENT_SECRET,
       grant_type: "refresh_token",
-      refresh_token
+      refresh_token,
     });
 
-    const { data } = await axios.post(
-      `${process.env.KEYCLOAK_AUTH_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`,
-      params
-    );
+    const { data } = await axios.post(`${BASE_URL}/token`, params, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
 
     res.json({
       access_token: data.access_token,
       refresh_token: data.refresh_token,
-      expires_in: data.expires_in
+      expires_in: data.expires_in,
     });
   } catch (error) {
     console.error(error.response?.data || error.message);
@@ -60,9 +57,8 @@ export const refreshToken = async (req, res) => {
 
 export const logout = async (req, res) => {
   const { refresh_token } = req.body;
-
   if (!refresh_token) {
-    return res.status(400).json({ message: "Refresh token is required" });
+    return res.status(400).json({ message: "Refresh token required" });
   }
 
   try {
@@ -72,21 +68,17 @@ export const logout = async (req, res) => {
       refresh_token,
     });
 
-    const url = `${process.env.KEYCLOAK_AUTH_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/logout`;
-
-    const { status } = await axios.post(url, params, {
+    const { status } = await axios.post(`${BASE_URL}/logout`, params, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      validateStatus: () => true, // supaya kita handle error manual
+      validateStatus: () => true,
     });
 
-    if (status === 204 || status === 200) {
+    if (status === 204 || status === 200)
       return res.json({ message: "Logged out successfully" });
-    }
 
-    res.status(status).json({ message: "Logout request failed at Keycloak" });
+    res.status(status).json({ message: "Logout failed" });
   } catch (error) {
-    console.error("Logout error:", error.response?.data || error.message);
-    res.status(500).json({ message: "Logout failed", error: error.message });
+    console.error("Logout error:", error.message);
+    res.status(500).json({ message: "Logout failed" });
   }
 };
-

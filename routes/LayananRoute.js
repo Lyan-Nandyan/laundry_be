@@ -4,7 +4,7 @@ import { getAllLayanan, createLayanan } from "../controllers/LayananController.j
 
 const router = express.Router();
 
-router.get("/", apiProtect("petugas"), getAllLayanan);
-router.post("/", apiProtect("admin"), createLayanan);
+router.get("/", apiProtect(["petugas"]), getAllLayanan);
+router.post("/", apiProtect(["admin"]), createLayanan);
 
 export default router;

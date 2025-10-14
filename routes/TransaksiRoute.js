@@ -4,10 +4,10 @@ import { getAllTransaksi, createTransaksi, updateTransaksiStatus, deleteTransaks
 
 const router = express.Router();
 
-router.get("/", apiProtect("petugas"), getAllTransaksi);
-router.post("/", apiProtect("petugas"), createTransaksi);
-router.put("/:id/status", apiProtect("petugas"), updateTransaksiStatus);
-router.delete("/:id", apiProtect("petugas"), deleteTransaksi);
+router.get("/", apiProtect(["petugas"]), getAllTransaksi);
+router.post("/", apiProtect(["petugas"]), createTransaksi);
+router.put("/:id/status", apiProtect(["petugas"]), updateTransaksiStatus);
+router.delete("/:id", apiProtect(["petugas"]), deleteTransaksi);
 
 export default router;
     
