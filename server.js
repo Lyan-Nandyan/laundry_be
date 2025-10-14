@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import PelangganRoute from "./routes/PelangganRoute.js";
 import LayananRoute from "./routes/LayananRoute.js";
 import Transaksi from "./routes/TransaksiRoute.js";
@@ -11,6 +12,10 @@ dotenv.config();
 const PORT = process.env.PORT;
 
 app.use(express.json());
+app.use(cors({
+  origin: process.env.FE_URL,
+  credentials: true,
+}));
 
 app.use(sessionMiddleware);
 app.use(keycloak.middleware());
