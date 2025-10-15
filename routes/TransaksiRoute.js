@@ -4,17 +4,17 @@ import { getAllTransaksi,getTransaksiByPelanggan, getTransaksiById, getTransaksi
 
 const router = express.Router();
 
-router.get("/", requireRoles(["petugas"]), getAllTransaksi);
-router.post("/", requireRoles(["petugas"]), createTransaksi);
+router.get("/", requireRoles(["petugas", "pemilik"]), getAllTransaksi);
+router.post("/", requireRoles(["petugas", "pemilik"]), createTransaksi);
 
 router.get("/pelanggan", requireRoles(["pelanggan"]), getTransaksiByPelanggan);
-router.get("/status/:status", requireRoles(["petugas"]), getTransaksiByStatus);
+router.get("/status/:status", requireRoles(["petugas", "pemilik"]), getTransaksiByStatus);
 
 
-router.get("/:id", requireRoles(["petugas"]), getTransaksiById);
-router.patch("/:id", requireRoles(["petugas"]), updateStatusTransaksi);
-router.put("/:id", requireRoles(["petugas"]), updateTransaksi);
-router.delete("/:id", requireRoles(["petugas"]), deleteTransaksi);
+router.get("/:id", requireRoles(["petugas", "pemilik"]), getTransaksiById);
+router.patch("/:id", requireRoles(["petugas", "pemilik"]), updateStatusTransaksi);
+router.put("/:id", requireRoles(["petugas", "pemilik"]), updateTransaksi);
+router.delete("/:id", requireRoles(["petugas", "pemilik"]), deleteTransaksi);
 
 export default router;
     
