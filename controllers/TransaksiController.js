@@ -1,6 +1,7 @@
 import Transaksi from "../models/TransaksiModel.js";
 import Pelanggan from "../models/PelangganModel.js";
 import Layanan from "../models/LayananModel.js";
+import { Op } from "sequelize";
 
 export const getAllTransaksi = async (req, res) => {
   try {
@@ -49,6 +50,41 @@ export const getTransaksiByStatus = async (req, res) => {
     res.status(200).json(response);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getTransaksiByPelanggan = async (req, res) => {
+  try {
+    // Ambil username dari token Keycloak
+    const username = req.user?.preferred_username;
+    if (!username) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: missing user info" });
+    }
+
+    // Cari ID pelanggan berdasarkan nama (username)
+    const pelanggan = await Pelanggan.findOne({ where: { nama: username } });
+    if (!pelanggan) {
+      return res.status(404).json({ message: "Pelanggan tidak ditemukan" });
+    }
+
+    // Ambil transaksi berdasarkan id pelanggan
+    const response = await Transaksi.findAll({
+      where: {
+        id_pelanggan: pelanggan.id_pelanggan,
+        status: {
+          [Op.or]: req.query.status
+            ? req.query.status.split(",")
+            : ["Proses", "Selesai", "Diambil"],
+        },
+      },
+      include: [Pelanggan, Layanan],
+    });
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error fetching transaksi:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.get("/", requireRoles(["petugas"]), getAllPelanggan);
 router.post("/", requireRoles(["petugas"]), createPelanggan);
-router.get("/:id", requireRoles(["petugas"]), getPelangganById);
-router.put("/:id", requireRoles(["petugas"]), updatePelanggan);
+router.get("/:id", requireRoles(["petugas", "pelanggan"]), getPelangganById);
+router.put("/:id", requireRoles(["pelanggan"]), updatePelanggan);
 router.delete("/:id", requireRoles(["petugas"]), deletePelanggan);
 
 export default router;
