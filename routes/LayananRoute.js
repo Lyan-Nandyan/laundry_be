@@ -4,7 +4,7 @@ import { getAllLayanan, createLayanan, getLayananById, updateLayanan, deleteLaya
 
 const router = express.Router();
 
-router.get("/", requireRoles(["admin", "petugas"]), getAllLayanan);
+router.get("/", requireRoles(["admin", "petugas", "pelanggan"]), getAllLayanan);
 router.post("/", requireRoles(["admin", "petugas"]), createLayanan);
 router.get("/:id", requireRoles(["admin", "petugas"]), getLayananById);
 router.put("/:id", requireRoles(["admin", "petugas"]), updateLayanan);
